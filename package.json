@@ -1,0 +1,12 @@
+{
+	"type": "module",
+	"scripts": {
+		"dev": "dotenv -e .env -- tsx main.ts"
+	},
+	"devDependencies": {
+		"@ai-sdk/openai": "^3.0.74",
+		"ai": "^6.0.208",
+		"dotenv-cli": "^11.0.0",
+		"tsx": "^4.22.4"
+	}
+}

@@ -1,0 +1,7 @@
+.env
+.env.*
+.git
+.gitignore
+.pnpm-store
+Dockerfile
+node_modules
