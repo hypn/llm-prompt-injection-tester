@@ -8,6 +8,16 @@ const allowNonGuardrail = false; // allow combinations without guardrails applie
 const maxCombinationsToTry = 5; // use -1 to try all combinations
 const flag = "HARDWAREBOB-31415"; // replaced into "system-prompts" files at `{flag}`, used to detect prompt injection
 
+
+// will override/filter combinations to only using properties specified below (eg: to replay and test an "injected" combination)
+const preset = {
+  // "model": "gpt-5.4-mini",
+  // "systemPrompt": "computer-hardware.md",
+  // "guardrail": "rules.md",
+  // "userPrompt": "blank.md",
+  // "injection": "repeat-above.md"
+}
+
 export function listFiles(path: string): string[] {
   return readdirSync(path, {
     recursive: true,
@@ -47,11 +57,11 @@ const userPrompts = listFiles(userPromptsPath);
 const injections = listFiles(injectionsPath);
 
 const allCombinations = [];
-for (const model of models) {
-  for (const systemPrompt of systemPrompts) {
-    for (const guardrail of guardrails) {
-      for (const userPrompt of userPrompts) {
-        for (const injection of injections) {
+for (const model of (preset.model ? [preset.model] : models || [null])) {
+  for (const systemPrompt of (preset.systemPrompt ? [preset.systemPrompt] : systemPrompts || [null])) {
+    for (const guardrail of (preset.guardrail ? [preset.guardrail] : guardrails || [null])) {
+      for (const userPrompt of (preset.userPrompt ? [preset.userPrompt] : userPrompts || [null])) {
+        for (const injection of (preset.injection ? [preset.injection] : injections || [null])) {
           allCombinations.push({
             "model": model,
             // "modelTemperature": 0.7, // not supported on "reasoning" models, eg: gpt-5.4
