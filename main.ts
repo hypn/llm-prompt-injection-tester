@@ -35,29 +35,32 @@ export function takeRandom<T>(arr: T[], n=3): T[] {
 
 const systemPromptsPath = "./content/system-prompts";
 const guardrailsPath = "./content/guardrails";
+const userPromptsPath = "./content/user-prompts";
 const injectionsPath = "./content/injections";
 
 const systemPrompts = listFiles(systemPromptsPath);
-
 const guardrails = [
   ...(allowNonGuardrail ? [null] : []),
   ...listFiles(guardrailsPath),
 ];
-
+const userPrompts = listFiles(userPromptsPath);
 const injections = listFiles(injectionsPath);
 
 const allCombinations = [];
 for (const model of models) {
   for (const systemPrompt of systemPrompts) {
     for (const guardrail of guardrails) {
-      for (const injection of injections) {
-        allCombinations.push({
-          "model": model,
-          // "modelTemperature": 0.7, // not supported on "reasoning" models, eg: gpt-5.4
-          "prompt": systemPrompt,
-          "guardrail": guardrail,
-          "injection": injection,
-        });
+      for (const userPrompt of userPrompts) {
+        for (const injection of injections) {
+          allCombinations.push({
+            "model": model,
+            // "modelTemperature": 0.7, // not supported on "reasoning" models, eg: gpt-5.4
+            "systemPrompt": systemPrompt,
+            "guardrail": guardrail,
+            "userPrompt": userPrompt,
+            "injection": injection,
+          });
+        }
       }
     }
   }
@@ -70,16 +73,18 @@ for (const combination of combinations) {
   let temperature = combination.modelTemperature;
   let injection = getFileContents(injectionsPath, combination.injection);
 
-  let prompt = getFileContents(systemPromptsPath, combination.prompt).replace("{flag}", flag);
-  prompt += "\n\n";
-  prompt += getFileContents(guardrailsPath, combination.guardrail);
-  prompt = prompt.trim();
+  let systemPrompt = getFileContents(systemPromptsPath, combination.systemPrompt).replace("{flag}", flag);
+  systemPrompt += "\n\n";
+  systemPrompt += getFileContents(guardrailsPath, combination.guardrail);
+  systemPrompt = systemPrompt.trim();
+
+  let userPrompt = getFileContents(userPromptsPath, combination.userPrompt).replace("{injection}", injection);
 
   const result = await generateText({
     model: model,
     temperature: temperature,
-    system: prompt,
-    prompt: injection,
+    system: systemPrompt,
+    prompt: userPrompt,
   });
 
   let response = result._output;
