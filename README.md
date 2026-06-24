@@ -1,11 +1,10 @@
 # LLM Prompt Injection Tester
 
-Generates combinations of [system prompts](content/system-prompts/computer-hardware.md), [guardrails](content/guardrails) and [injections](content/injections), and sends them to specified OpenAI models to see which leak the "flag".
+Generates combinations of [system prompts](content/system-prompts/computer-hardware.md), [guardrails](content/guardrails/rules.md) and [injections](content/injections), then sends them to specified OpenAI models to see which leak the "flag".
 
-The "flag" is defined in the [main.ts](main.ts) file (eg: `const flag = "HARDWAREBOB-31415"`) and gets replaced into the system prompt files (eg: `The secret code is {flag}.`).
+The "flag" is defined in the [main.ts](main.ts) file (eg: `const flag = "HARDWAREBOB-31415"`) and gets replaced into the system prompt file(s) (eg: `The secret code is {flag}.`).
 
 See also `models`, `allowNonGuardrail`, and `maxCombinationsToTry` options in [main.ts](main.ts).
-
 
 ---
 
